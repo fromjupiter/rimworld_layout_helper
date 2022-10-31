@@ -1,0 +1,120 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+  <body>
+  <script src="https://unpkg.com/gojs@2.2.17/release/go.js"></script>
+  <p>
+    Rimworld 辅助建家辅助器简洁版。This is a minimalist HTML and JavaScript skeleton of the GoJS Sample
+    <a href="https://gojs.net/latest/samples/fdLayout.html">fdLayout.html</a>. It was automatically generated from a button on the sample page,
+    and does not contain the full HTML. It is intended as a starting point to adapt for your own usage.
+    For many samples, you may need to inspect the
+    <a href="https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/fdLayout.html">full source on Github</a>
+    and copy other files or scripts.
+  </p>
+  <div id="allSampleContent" class="p-4 w-full">
+  <script id="code">
+  // define a custom ForceDirectedLayout for this sample
+  class DemoForceDirectedLayout extends go.ForceDirectedLayout {
+    // Override the makeNetwork method to also initialize
+    // ForceDirectedVertex.isFixed from the corresponding Node.isSelected.
+    makeNetwork(coll) {
+      // call base method for standard behavior
+      const net = super.makeNetwork(coll);
+      net.vertexes.each(vertex => {
+        const node = vertex.node;
+        if (node !== null) vertex.isFixed = node.isSelected;
+      });
+      return net;
+    }
+  }
+  // end DemoForceDirectedLayout class
+
+
+    function init() {
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",  // must be the ID or reference to div
+          {
+            initialAutoScale: go.Diagram.Uniform,  // zoom to make everything fit in the viewport
+            layout: new DemoForceDirectedLayout()  // use custom layout
+            // other Layout properties are set by the layout function, defined below
+          });
+
+      // define the Node template
+      myDiagram.nodeTemplate =
+        $(go.Node, "Spot",
+          // make sure the Node.location is different from the Node.position
+          { locationSpot: go.Spot.Center },
+          new go.Binding("text", "text"),  // for sorting
+          $(go.Shape, "Ellipse",
+            {
+              fill: "lightgray",
+              stroke: null,
+              desiredSize: new go.Size(30, 30)
+            },
+            new go.Binding("fill", "fill")),
+          $(go.TextBlock,
+            new go.Binding("text", "text"))
+        );
+
+      // define the Link template
+      myDiagram.linkTemplate =
+        $(go.Link,
+          { selectable: false },
+          $(go.Shape,
+            { strokeWidth: 3, stroke: "#333" }));
+
+      // generate a tree using the default values
+      rebuildGraph();
+    }
+
+    function rebuildGraph() {
+      myDiagram.startTransaction("generateTree");
+      var nodeDataArray = [
+        { key: 1, text: "餐厅" },
+        { key: 2, text: "研究室&宿舍" },
+        { key: 3, text: "工作间" },
+        { key: 4, text: "冷库" },
+        { key: 5, text: "仓库" },
+        { key: 6, text: "大卧室" },
+        { key: 7, text: "牢房" }
+      ];
+      var linkDataArray = [
+        { from: 1, to: 2, text: "" },
+        { from: 1, to: 7, text: "" },
+        { from: 2, to: 3, text: "" },
+        { from: 3, to: 5, text: "" },
+        { from: 4, to: 5, text: "" },
+        { from: 4, to: 7, text: "" },
+        { from: 4, to: 1, text: "" }
+      ];
+      myDiagram.model.nodeDataArray = nodeDataArray;
+      myDiagram.model.linkDataArray = linkDataArray;
+      layout();
+      myDiagram.commitTransaction("generateTree");
+    }
+
+    // Update the layout from the controls.
+    // Changing the properties will invalidate the layout.
+    function layout() {
+      myDiagram.startTransaction("changed Layout");
+      const lay = myDiagram.layout;
+
+      myDiagram.commitTransaction("changed Layout");
+    }
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="background: white; border: 1px solid black; width: 100%; height: 500px; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0); cursor: auto;"><canvas tabindex="0" width="1054" height="498" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1054px; height: 498px; cursor: auto;">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1054px; height: 498px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
+  <p>
+    For information on <b>ForceDirectedLayout</b> and its properties, see the <a href="../api/symbols/ForceDirectedLayout.html" target="api">ForceDirectedLayout</a> documentation page.
+  </p>
+<p class="text-xs">GoJS version 2.2.17. Copyright 1998-2022 by Northwoods Software.</p></div>
+    <p><a href="https://github.com/fromjupiter/rimworld_layout_helper" target="_blank">View this sample page's source on GitHub</a></p></div>
+  </body>
+  </html>
